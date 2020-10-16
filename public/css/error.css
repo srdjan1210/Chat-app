@@ -1,0 +1,22 @@
+body{
+    height: 100vh;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(49, 114, 98);
+}
+
+h1 {
+    font-size: 70px;
+}
+
+h2 {
+    font-size: 60px;
+}
+
+
+

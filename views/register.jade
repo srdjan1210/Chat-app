@@ -1,0 +1,55 @@
+doctype html
+html
+  head
+    link(rel='stylesheet' type='text/css' href='../css/register.css')
+  body
+    .container
+      .header
+        .image-holder
+          img(src='../images/messenger-icon.png' alt=' messanger-icon')
+        h1 Welcome to Srki's chat! 
+        .nav-btn-container
+          button.nav-button
+            a.active(href='/register') Register
+          button.nav-button
+            a(href='/login') Login
+      .form-container
+        form(id="form")
+          h1 Please register!
+          span(class="err-message") #{err}
+          input(type='text' name='username' required='' placeholder='Enter your username!' autocomplete='false')
+          input(type='password' name='password' minlength='8' required='' placeholder='Enter your password!' autocomplete='false')
+          input(type='email' name='email' required='' placeholder='Enter valid email!' autocomplete='false')
+          label(for="image-upload" class="custom-file-upload") Choose profile picture!
+          input(class="image-upload" type="file" name="image" required )
+          button(type='submit')  Register
+    script(type='text/javascript').
+              const form = document.getElementById('form');
+              const fileInput = document.querySelector('input[type="file"]');
+              const link = 'http://localhost:3000';
+              form.addEventListener('submit', function (e) {
+                  e.preventDefault();
+                  
+                  const formData =  new FormData(this);
+      
+                  fetch('/register', {
+                    method: 'post',
+                    body: formData
+                  }).then(function (response) {
+                    return response.json();
+                  }).then(function (resp) {
+                    if(resp.error){
+                      const errorSpan = document.querySelector('.err-message');
+                      if(resp.error.startsWith("E11000 duplicate key")){
+                        errorSpan.innerHTML = "Username or email alredy in use!";
+                        return;
+                      }
+                      errorSpan.innerHTML = resp.error;
+                      return;
+                    }
+                    window.location.href = link + '/login';
+                  });
+                  
+              });   
+              
+     

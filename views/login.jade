@@ -1,0 +1,56 @@
+doctype html
+html
+  head
+    link(rel='stylesheet' type='text/css' href='../css/register.css')
+  body
+    .container
+      .header
+        .image-holder
+          img(src='../images/messenger-icon.png' alt=' messanger-icon')
+        h1 Welcome to Srki's chat! 
+        .nav-btn-container
+          button.nav-button
+            a(href='/register') Register
+          button.nav-button
+            a.active(href='/login') Login
+      .form-container
+        form(id="form")
+          h1=message
+          span(class="err-message") #{err}
+          input(type='email' name='email' required='' placeholder='Enter valid email!' autocomplete='false')
+          input(type='password' name='password' minlength='8' required='' placeholder='Enter your password!' autocomplete='false')
+          button(type='submit')  Login
+    script(type="text/javascript").
+      const form = document.getElementById('form');
+      function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+      }
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+      const data = new URLSearchParams();
+      for (const pair of new FormData(form)) {
+          data.append(pair[0], pair[1]);
+      }
+
+      fetch('/login', {
+          method: 'post',
+          body: data,
+      }).then((response) => {
+          document.cookie=`auth-token=${response.headers.get('auth-token')}`
+          return response.json()
+      }).then((resp) => {
+          if(resp.error){
+            document.querySelector('.err-message').innerHTML = resp.error.message;
+            return;
+          }
+          window.location.href = 'http://localhost:3000/login/chat';
+
+        });
+      });
