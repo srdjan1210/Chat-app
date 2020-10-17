@@ -7,7 +7,7 @@ body {
 
 .header {
     width: 100%;
-    height: 20%;
+    height: 0%;
     background: #23313f;
     display: flex;
     justify-content: center;
@@ -42,20 +42,22 @@ body {
 }
 
 .nav-btn-container {
-    width:10%;
-    height: 100%;
+    width: 80px;
+    height: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-right: 5%;
+    align-self: center;
 }
 
 .nav-button {
     width:100%;
-    height: 30%;
+    height: 100%;
     background: none;
     border: none;
     font-weight: 700;
+    align-self: center;
+    text-align: end;
 
 }
 
@@ -64,7 +66,7 @@ body {
     width:100%;
     color: white;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 14px;
 }
 
 .active {
@@ -74,7 +76,7 @@ body {
 /*content module*/
 .content-holder {
     width: 100%;
-    height: 80%;
+    height: 100%;
     display:flex;
     flex-direction: row;
 }
@@ -225,7 +227,7 @@ Chat container
     width: 100%;
     height: 80%;
     overflow-y: scroll;
-    background:  #454647;
+    background:  #8e9094;
     padding-top: 5px;
 }
 
@@ -250,6 +252,8 @@ Chat container
     top: 0;
     display: flex;
     flex-direction: row;
+    background: #23313f;
+    color: white;
    
 }
 
@@ -306,5 +310,14 @@ Chat container
     color: white;
 }
 
+.icon-offline {
+    background-image: url('../images/grey-dot.png');
+    background-repeat: no-repeat;
+    background-size: 100%;
+    height: 15px;
+    width: 15px;
+}
 
-
+::-webkit-scrollbar-track-piece {
+    background: #23313f!important;
+  }
