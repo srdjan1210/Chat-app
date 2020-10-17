@@ -80,15 +80,74 @@ body {
 }
 
 
-.users-container {
+/*
+
+
+    PROFILE AND USERS MODULE
+
+
+*/
+.profile-info {
     width: 100%;
     height: 100%;
-    min-height: 100%;
     min-width: 300px;
     max-width: 300px;
-    max-height: 100%;
-    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    
 }
+
+.users-container {
+    flex: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    
+}
+
+.logged-user-info {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    border: 1px solid black;
+    bottom: 0;
+    color: white;
+    background: #23313f;
+
+}
+
+.logged-user-info img{
+    height: 30px;
+    width: 30px;
+    min-height: 30px;
+    min-width: 30px;
+    border-radius: 50%;
+    margin: 10px;
+}
+
+.logged-user-info h3 {
+    align-self: center;
+}
+.tit {
+    border-bottom: 1px solid black;
+    height: 100px;
+    min-height: 100px;
+    max-height: 100px;
+    width: 100%;
+    background-color: #23313f!important;
+    color: white;
+
+}
+
+/*
+
+
+    Chat container
+
+*/
 
 .chat-container {
     width: 100%;
@@ -109,6 +168,9 @@ body {
     flex-direction: row; 
     align-items: center;
     padding-left: 30px;
+    color: white;
+    border-bottom: 1px solid black;
+    background-color:#23313f;
 }
 
 .pointer {
@@ -136,10 +198,7 @@ hr {
     margin-left: 10px;
 }
 
-.tit {
-    border: 1px solid black;
-    margin-bottom: 15px;
-}
+
 
 .profile_photo{
     width: 30px;
@@ -151,10 +210,7 @@ hr {
 
 }
 
-.profile-info {
-    width: 30%;
 
-}
 
 /*
 
@@ -166,10 +222,11 @@ Chat container
 */
 
 .message-container {
-    margin-top: 20px;
     width: 100%;
     height: 80%;
     overflow-y: scroll;
+    background:  #454647;
+    padding-top: 5px;
 }
 
 .message-input-container {
@@ -177,6 +234,7 @@ Chat container
     height: 10%;
     margin-left: 20px;
     margin-bottom: 20px;
+    margin-top: 10px;
 }
 
 .message-input-container input {
@@ -186,14 +244,13 @@ Chat container
 }
 .chat-user-info {
     width: 100%;
-    height: 10%;
+    height: 50px;
     min-height: 30px;
     position: relative;
     top: 0;
     display: flex;
     flex-direction: row;
-    padding-left: 10px;
-    padding-top: 10px;
+   
 }
 
 .chat-user-info img {
@@ -202,11 +259,11 @@ Chat container
     min-width: 30px;
     min-height: 30px;
     border-radius: 50%;
-    margin-right: 10px;
+    margin: 10px;
 }
 
 .chat-user-info h2 {
-    margin-top: 0px;
+    margin-top: 10px;
 }
 
 .single-message {
@@ -245,6 +302,9 @@ Chat container
 
 
 .selected-room {
-    background: #23313f;
+    background:  rgb(49, 114, 98);
     color: white;
 }
+
+
+

@@ -11,19 +11,23 @@ ishtml
           button.nav-button
             a(href='/login/chat/logout') Logout
       .content-holder
-        .users-container
+        .profile-info
           .active-user.tit
-            span.icon-active
-            h1 Active Users
-          each user in users
-           .active-user.pointer(onclick="joinRoom('#{user._id}')")
-            span.icon-active
-            img(class="profile_photo" id="#{user._id}" src="data:image/png;base64,#{user.img.data.toString('base64')}")
-            h3= user.username
+              span.icon-active
+              h1 Active Users
+          .users-container
+            each user in users
+              .active-user.pointer(onclick="joinRoom('#{user._id}')")
+                span.icon-active
+                img(class="profile_photo" id="#{user._id}" src="data:image/png;base64,#{user.img.data.toString('base64')}")
+                h3= user.username
+          .logged-user-info
+            img(src="data:image/png;base64,#{owner.img.data.toString('base64')}" alt="" id="#{owner._id}")
+            h3=owner.username
         .chat-container
           .chat-user-info
-            img(src="data:image/png;base64,#{owner.img.data.toString('base64')}" alt="" id="#{owner._id}")
-            h2=owner.username
+            img( src="../images/avatar.png" alt="")
+            h2
           .message-container
           .message-input-container
             input(id="messageInput" type="text")
@@ -33,8 +37,6 @@ ishtml
       var socket = io();
       var receiver = null;
       var roomId = null;
-
-
       /*
 
           SOCKET LISTENERS
@@ -141,7 +143,7 @@ ishtml
         div.classList.add('pointer');
         div.innerHTML = `<span class='icon-active'></span>
                          <img id='${user._id}' class='profile_photo' src='data:image/png;base64,${user.img}'/>
-                         <h2>${user.username}</h2>`;
+                         <h3>${user.username}</h3>`;
         div.addEventListener('click', (e) => {
             joinRoom(user._id + "");
         });
@@ -168,6 +170,12 @@ ishtml
         else
           parent.appendChild(div);
       };
+
+      const usrCont = document.querySelector('.users-container');
+      if(usrCont.children.length != 0){
+        usrCont.children[0].click();
+      }
+
       
        
                            
