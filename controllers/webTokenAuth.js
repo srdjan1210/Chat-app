@@ -6,8 +6,10 @@ const checkTokenValidity = (req, res, next) => {
     
     let token = req.header('auth-token');
     if(!token) token = req.cookies['auth-token'];
-    if(!token) res.json({ error: { message : 'Access denied!'}});
-
+    if(!token) { 
+        res.json({ error: { message : 'Access denied!'}});
+        return;
+    }
     try {
         const payload = jsonwebtoken.verify(token, secret);
         console.log(payload);

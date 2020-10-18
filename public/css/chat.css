@@ -48,6 +48,8 @@ body {
     justify-content: center;
     align-items: center;
     align-self: center;
+    position: absolute;
+    right: 20;
 }
 
 .nav-button {
@@ -237,12 +239,28 @@ Chat container
     margin-left: 20px;
     margin-bottom: 20px;
     margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .message-input-container input {
     width: 70%;
     height: 50px;
 
+}
+.message-input-container button {
+    width: 35;
+    height: 30px;
+    margin-left: 10px;
+    align-self: center;
+    white-space:nowrap;
+    background-image: url('../images/send.png');
+    background-repeat: no-repeat;
+    background-size: 100%;
+    outline: none;
+    border: none;
+    cursor: pointer;
 }
 .chat-user-info {
     width: 100%;
@@ -317,7 +335,3 @@ Chat container
     height: 15px;
     width: 15px;
 }
-
-::-webkit-scrollbar-track-piece {
-    background: #23313f!important;
-  }

@@ -1,4 +1,4 @@
-const { validateLogin, loginUser, getAllActiveUsers, setUserStatus, getUserUsingId } = require('../models/user');
+const { validateLogin, loginUser, getAllActiveUsers, setUserStatus, getUserUsingId, getAllOfflineUsers} = require('../models/user');
 const { signData, checkTokenValidity } = require('../controllers/webTokenAuth');
 const _ = require('lodash');
 const path = require('path');
@@ -41,8 +41,9 @@ const loginChat = async (req, res) => {
     const user = req.user;
     await setUserStatus(user, true);
     const users = await getAllActiveUsers(user);
+    const offUsers = await getAllOfflineUsers(user);
     const owner = await getUserUsingId(user._id);
-    res.render('chat', { users, owner });
+    res.render('chat', { users, owner, offUsers });
 };
 
 const logout = async (req, res) => {
