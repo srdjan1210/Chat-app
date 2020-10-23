@@ -82,7 +82,7 @@ ishtml
           this.roomId = roomId;
           for(let message of messages){
             if(message.image)
-              appendImage(message.image,  bufferTo64string(message.author.img.data.data));
+              appendImage(message.image,  bufferTo64string(message.author.img.data.data), 0);
             else
               appendMessage(message.content, bufferTo64string(message.author.img.data.data), 0);
           }

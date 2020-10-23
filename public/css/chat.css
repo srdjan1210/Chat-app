@@ -214,6 +214,7 @@ hr {
     height: 30px;
     max-height: 30px;
     max-width: 30px;
+    min-width: 30px;
     border-radius: 50%;
     margin-left: 10px;
 
@@ -340,17 +341,16 @@ input[type="file"] {
 }
 
 .image-container {
-    width: 300px;
-    height: 300px;
     max-width: 300px;
     max-height: 300px;
     margin-left: 10px;
     display: flex;
     flex-direction: row;
+    margin-bottom: 30px;
 }
 .image-container img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     margin-left: 10px;
 }
 
@@ -390,8 +390,8 @@ input[type="file"] {
 }
 
 .half-size {
-    width: 50%!important;
-    height: 80%!important;
+    width: auto!important;
+    height: auto!important;
     align-self: center;
 
 }
