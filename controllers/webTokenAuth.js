@@ -25,5 +25,4 @@ const signData = (data) => {
     return signed;
 };
 
-module.exports.checkTokenValidity = checkTokenValidity;
-module.exports.signData = signData;
+module.exports = { checkTokenValidity, signData }

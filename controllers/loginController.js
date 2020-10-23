@@ -54,8 +54,4 @@ const logout = async (req, res) => {
     
 };
 
-
-module.exports.loginGet = loginGet;
-module.exports.loginPost = loginPost;
-module.exports.loginChat = loginChat;
-module.exports.logout = logout;
+module.exports = { loginGet, loginPost, loginChat, logout };

@@ -16,3 +16,5 @@ const checkPasswordValidity = async (providedPassword, hashedPassword) => {
 
 module.exports.hashPassword = hashPassword;
 module.exports.checkPasswordValidity = checkPasswordValidity;
+
+module.exports = { checkPasswordValidity, hashPassword };

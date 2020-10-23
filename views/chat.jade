@@ -34,6 +34,8 @@ ishtml
           .message-input-container
             input(id="messageInput" type="text" placeholder='Write a message!')
             button#sendMessage(onclick="sendMessage()" type="button")  
+            input(id="file-input" type="file" name="image")
+            button#sendPicture(onClick="document.getElementById('file-input').click();")
         .profile-info
           .active-user.tit
               h1 Offline Users
@@ -44,6 +46,7 @@ ishtml
                 img(class="profile_photo" id="#{user._id}" src="data:image/png;base64,#{user.img.data.toString('base64')}")
                 h3= user.username
     script(src = "/socket.io/socket.io.js").
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
     script(type="text/javascript").
         var socket = io();
         var receiver = null;
@@ -75,13 +78,21 @@ ishtml
           scrollToLastMessage();
         });
 
-        socket.on('load messages', ({ messages, roomId, isFirstTimeLoading }) => {
+        socket.on('load messages', ({ messages, roomId, isFirstTimeLoading}) => {
           this.roomId = roomId;
           for(let message of messages){
-            appendMessage(message.content, bufferTo64string(message.author.img.data.data), 0);
+            if(message.image)
+              appendImage(message.image,  bufferTo64string(message.author.img.data.data));
+            else
+              appendMessage(message.content, bufferTo64string(message.author.img.data.data), 0);
           }
           if(isFirstTimeLoading)
             scrollToLastMessage();
+        });
+
+        socket.on('image', ({ image, authorImage }) => {
+          appendImage(image, authorImage, 1);
+          scrollToLastMessage();
         });
 
         /*
@@ -92,6 +103,29 @@ ishtml
 
 
         */
+          
+        $(document).ready(function() {
+          console.log("ready");
+          $('.message-container').on('click', '.image-container', function (e) {
+            $(this).toggleClass('fullscreen');
+            $(this.children[0]).toggleClass('hidden');
+            $(this.children[1]).toggleClass('half-size');
+            console.log(this);
+          });
+        });
+
+        
+
+        document.getElementById('file-input').addEventListener('change', function(e) {
+
+          const reader = new FileReader();
+          reader.onload = function() {
+            const base64 = this.result.replace(/.*base64,/, '');
+            socket.emit('image', {ownerId: "#{owner._id}", receiverId: receiver, image: base64});
+          };
+          reader.readAsDataURL(this.files[0]);
+          this.value = "";
+        }, false);
 
         document.getElementById('messageInput').addEventListener('keyup', function (e) {
           
@@ -182,14 +216,25 @@ ishtml
             parent.appendChild(div);
         };
 
+        const appendImage = (image, profileImage, place) => {
+          const parent = document.querySelector('.message-container');
+          const div = document.createElement('div');
+          const prof_photo = document.createElement('img');
+          let img = document.createElement('img');
+          div.classList.add('image-container') 
+          prof_photo.classList.add('profile_photo');
+          prof_photo.src = "data:image/png;base64," + profileImage;
+          img.classList.add('single-image');
+          img.src= "data:image/png;base64," + image;
+          div.appendChild(prof_photo);
+          div.appendChild(img);
+          if(place == 0)
+            parent.insertBefore(div, parent.firstChild);
+          else  
+            parent.appendChild(div);
+        };
+
         const usrCont = document.querySelector('.users-container');
         if(usrCont.children.length != 0){
           usrCont.children[0].click();
         }
-
-      
-       
-                           
-                       
-
-  

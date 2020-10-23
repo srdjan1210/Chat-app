@@ -12,7 +12,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const { setUserStatus } = require('./models/user');
 const { findRoomByUsers } = require('./models/chat_room')
-const { saveMessage, loadMessages } = require('./models/message');
+const { saveMessage, loadMessages, savePicture } = require('./models/message');
 //routers
 const registerRouter = require('./routes/register');
 const loginRouter = require('./routes/login');
@@ -53,6 +53,14 @@ const loginRouter = require('./routes/login');
            const messages = await loadMessages(roomId, n);
            socket.emit('load messages', { messages, roomId, isFirstTimeLoading: false})
         }); 
+
+        socket.on('image', async ({ownerId, receiverId, image}) => {
+            const room = await findRoomByUsers([ownerId, receiverId]);
+            const saved = await savePicture([ownerId, receiverId], image, room);
+            if(saved != null){
+                socket.emit('image', { image, authorImage:saved.author.img.data.toString('base64') });
+            }
+        });
 
         socket.on('disconnect', () => {
             socket.rooms = {};
