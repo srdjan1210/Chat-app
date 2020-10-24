@@ -45,7 +45,7 @@ const loginRouter = require('./routes/login');
             const savedMessage = await saveMessage(data, [data.ownerId, data.receiverId], room);
 
             if(savedMessage)
-                io.sockets.in(room._id + '').emit('newMessage', savedMessage);
+                io.sockets.in(room._id).emit('newMessage', savedMessage);
 
         });
 
@@ -58,7 +58,7 @@ const loginRouter = require('./routes/login');
             const room = await findRoomByUsers([ownerId, receiverId]);
             const saved = await savePicture([ownerId, receiverId], image, room);
             if(saved != null){
-                socket.emit('image', { image, authorImage:saved.author.img.data.toString('base64') });
+                io.sockets.in(room._id).emit('image', { image, authorImage:saved.author.img.data.toString('base64') });
             }
         });
 
