@@ -34,6 +34,4 @@ const registerGet = (req, res, next) => {
     res.render('register', {err: undefined});
 }
 
-
-module.exports.registerPost = registerPost;
-module.exports.registerGet = registerGet;
+module.exports = { registerGet, registerPost }

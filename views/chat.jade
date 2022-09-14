@@ -13,9 +13,8 @@ ishtml
       .content-holder
         .profile-info
           .active-user.tit
-              span.icon-active
-              h1 Active Users
-          .users-container
+              h1 Online Users
+          .users-container#active-users
             each user in users
               .active-user.pointer(onclick="joinRoom('#{user._id}')")
                 span.icon-active
@@ -24,161 +23,218 @@ ishtml
           .logged-user-info
             img(src="data:image/png;base64,#{owner.img.data.toString('base64')}" alt="" id="#{owner._id}")
             h3=owner.username
+            .nav-btn-container
+              button.nav-button
+                a(href='/login/chat/logout') Logout
         .chat-container
           .chat-user-info
             img( src="../images/avatar.png" alt="")
             h2
           .message-container
           .message-input-container
-            input(id="messageInput" type="text")
-            button#sendMessage(onclick="sendMessage()") Send
+            input(id="messageInput" type="text" placeholder='Write a message!')
+            button#sendMessage(onclick="sendMessage()" type="button")  
+            input(id="file-input" type="file" name="image")
+            button#sendPicture(onClick="document.getElementById('file-input').click();")
+        .profile-info
+          .active-user.tit
+              h1 Offline Users
+          .users-container#offline-users
+            each user in offUsers
+              .active-user.pointer(onclick="joinRoom('#{user._id}')")
+                span.icon-offline
+                img(class="profile_photo" id="#{user._id}" src="data:image/png;base64,#{user.img.data.toString('base64')}")
+                h3= user.username
     script(src = "/socket.io/socket.io.js").
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
     script(type="text/javascript").
-      var socket = io();
-      var receiver = null;
-      var roomId = null;
-      /*
+        var socket = io();
+        var receiver = null;
+        var roomId = null;
+        /*
 
-          SOCKET LISTENERS
-      
-      */
-      socket.on('connect', () => {
-        socket.emit('new user', { 
-          _id: '#{owner._id}',
-          username: '#{owner.username}',
-          img:'#{owner.img.data.toString('base64')}',
-          email: '#{owner.email}'
-        });
-      });
-
-      socket.on('load user', (user) => {
-        loadUser(user);
-      });
-
-      socket.on('remove user', (user) => {
-        removeUser(user);
-      });
-
-      socket.on('newMessage', (data) => {
-        appendMessage(data.content, bufferTo64string(data.author.img.data.data), 1);
-        scrollToLastMessage();
-      });
-
-      socket.on('load messages', ({ messages, roomId, isFirstTimeLoading }) => {
-        this.roomId = roomId;
-        for(let message of messages){
-          appendMessage(message.content, bufferTo64string(message.author.img.data.data), 0);
-        }
-        if(isFirstTimeLoading)
-           scrollToLastMessage();
-      });
-
-      /*
-
-
-        FUNCTIONS
-      
-
-
-      */
-
-      window.addEventListener("beforeunload", function(event) {
-          
-          socket.emit('left chat', {
+            SOCKET LISTENERS
+        
+        */
+        socket.on('connect', () => {
+          socket.emit('new user', { 
             _id: '#{owner._id}',
+            username: '#{owner.username}',
+            img:'#{owner.img.data.toString('base64')}',
             email: '#{owner.email}'
           });
-      });
-
-      const messContainer = document.querySelector('.message-container');
-      messContainer.addEventListener('scroll', function (e) {
-        if(messContainer.scrollTop == 0){
-          socket.emit('load messages', { n: messContainer.children.length, roomId });
-        }
-      });
-
-      const scrollToLastMessage = () => {
-        const mesCont = document.querySelector('.message-container');
-        mesCont.scrollTop = mesCont.scrollHeight;
-      }
-
-      const bufferTo64string  = (array) => {
-          return btoa(new Uint8Array(array).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-      };
-
-      const joinRoom = (id) => {
-        if(receiver == id)
-          return;
-        setObjectsAfterJoiningRoom(id);
-        document.querySelector('.message-container').innerHTML = '';
-        receiver = id;
-        socket.emit('join room', { ownerId: '!{owner._id}', receiverId: id , roomId});
-      };
-
-      const setObjectsAfterJoiningRoom = (id) => {
-        const selectedRoom = document.querySelector('.selected-room')
-        if(selectedRoom != null)
-          selectedRoom.classList.remove('selected-room');
-        const newImg = document.getElementById(id);
-        const newUsername = newImg.parentElement.children[2];
-        newImg.parentElement.classList.add('selected-room');
-        const currentProfile = document.querySelector('.chat-user-info');
-        currentProfile.children[0].src = newImg.src;
-        currentProfile.children[1].innerHTML = newUsername.innerHTML;
-      }
-
-      const sendMessage = () => {
-        const input = document.getElementById('messageInput');
-        const message = input.value;
-        socket.emit('sendMessage', {ownerId: '!{owner._id}' , receiverId: receiver, message});
-        input.value = '';
-        input.focus();
-      }
-
-      const loadUser = (user) => {
-        if(document.getElementById(user._id + ""))
-          return;
-        let div = document.createElement('div');
-        div.classList.add('active-user');
-        div.classList.add('pointer');
-        div.innerHTML = `<span class='icon-active'></span>
-                         <img id='${user._id}' class='profile_photo' src='data:image/png;base64,${user.img}'/>
-                         <h3>${user.username}</h3>`;
-        div.addEventListener('click', (e) => {
-            joinRoom(user._id + "");
         });
-        document.querySelector(".users-container").appendChild(div);
-      }
+
+        socket.on('load user', (user) => {
+          loadUser(user);
+        });
+
+        socket.on('remove user', (user) => {
+          loadUser(user);
+        });
+
+        socket.on('newMessage', (data) => {
+          appendMessage(data.content, bufferTo64string(data.author.img.data.data), 1);
+          scrollToLastMessage();
+        });
+
+        socket.on('load messages', ({ messages, roomId, isFirstTimeLoading}) => {
+          this.roomId = roomId;
+          for(let message of messages){
+            if(message.image)
+              appendImage(message.image,  bufferTo64string(message.author.img.data.data), 0);
+            else
+              appendMessage(message.content, bufferTo64string(message.author.img.data.data), 0);
+          }
+          if(isFirstTimeLoading)
+            scrollToLastMessage();
+        });
+
+        socket.on('image', ({ image, authorImage }) => {
+          appendImage(image, authorImage, 1);
+          scrollToLastMessage();
+        });
+
+        /*
 
 
-      const removeUser = (usr) => {
-        const user = document.getElementById(usr._id);
-        const parent = user.parentNode;
-        parent.innerHTML = "";
-        parent.remove();
+          FUNCTIONS
+        
 
-      }
 
-      const appendMessage = ( message, img , place) => {
-        const parent = document.querySelector('.message-container');
-        let div = document.createElement('div');
-        div.classList.add('single-message');
-        div.innerHTML = `<img src='data:image/png;base64,${img}' alt="">
-                        <p>${message}</p>`
-        if(place == 0)
-          parent.insertBefore( div, parent.firstChild);
-        else
-          parent.appendChild(div);
-      };
+        */
+          
+        $(document).ready(function() {
+          console.log("ready");
+          $('.message-container').on('click', '.image-container', function (e) {
+            $(this).toggleClass('fullscreen');
+            $(this.children[0]).toggleClass('hidden');
+            $(this.children[1]).toggleClass('half-size');
+            console.log(this);
+          });
+        });
 
-      const usrCont = document.querySelector('.users-container');
-      if(usrCont.children.length != 0){
-        usrCont.children[0].click();
-      }
+        
 
-      
-       
-                           
-                       
+        document.getElementById('file-input').addEventListener('change', function(e) {
 
-  
+          const reader = new FileReader();
+          reader.onload = function() {
+            const base64 = this.result.replace(/.*base64,/, '');
+            socket.emit('image', {ownerId: "#{owner._id}", receiverId: receiver, image: base64});
+          };
+          reader.readAsDataURL(this.files[0]);
+          this.value = "";
+        }, false);
+
+        document.getElementById('messageInput').addEventListener('keyup', function (e) {
+          
+          if(e.keyCode == 13){
+            sendMessage();
+          }
+        });
+
+        window.addEventListener("beforeunload", function(event) {
+            
+            socket.emit('left chat', {
+              _id: '#{owner._id}',
+              email: '#{owner.email}'
+            });
+        });
+
+        const messContainer = document.querySelector('.message-container');
+        messContainer.addEventListener('scroll', function (e) {
+          if(messContainer.scrollTop == 0){
+            socket.emit('load messages', { n: messContainer.children.length, roomId });
+          }
+        });
+
+        const scrollToLastMessage = () => {
+          const mesCont = document.querySelector('.message-container');
+          mesCont.scrollTop = mesCont.scrollHeight;
+        }
+
+        const bufferTo64string  = (array) => {
+            return btoa(new Uint8Array(array).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+        };
+
+        const joinRoom = (id) => {
+          if(receiver == id)
+            return;
+          setObjectsAfterJoiningRoom(id);
+          document.querySelector('.message-container').innerHTML = '';
+          receiver = id;
+          socket.emit('join room', { ownerId: '!{owner._id}', receiverId: id , roomId});
+        };
+
+        const setObjectsAfterJoiningRoom = (id) => {
+          const selectedRoom = document.querySelector('.selected-room')
+          if(selectedRoom != null)
+            selectedRoom.classList.remove('selected-room');
+          const newImg = document.getElementById(id);
+          const newUsername = newImg.parentElement.children[2];
+          newImg.parentElement.classList.add('selected-room');
+          const currentProfile = document.querySelector('.chat-user-info');
+          currentProfile.children[0].src = newImg.src;
+          currentProfile.children[1].innerHTML = newUsername.innerHTML;
+        }
+
+        const sendMessage = () => {
+          const input = document.getElementById('messageInput');
+          if(input.value.trim() == "")
+            return;
+          const message = input.value;
+          socket.emit('sendMessage', {ownerId: '!{owner._id}' , receiverId: receiver, message});
+          input.value = '';
+          input.focus();
+        }
+
+        const loadUser = (user) => {
+          const child = document.getElementById(user._id);
+          const parent = child.parentNode;
+          if(parent.parentNode.id == 'active-users'){
+            parent.children[0].classList.remove('icon-active');
+            parent.children[0].classList.add('icon-offline');
+            document.getElementById('offline-users').appendChild(parent);
+          }else {
+            parent.children[0].classList.add('icon-active');
+            parent.children[0].classList.remove('icon-offline');
+            document.getElementById('active-users').appendChild(parent);
+          }
+
+        }
+
+        const appendMessage = ( message, img , place) => {
+          const parent = document.querySelector('.message-container');
+          let div = document.createElement('div');
+          div.classList.add('single-message');
+          div.innerHTML = `<img src='data:image/png;base64,${img}' alt="">
+                          <p>${message}</p>`
+          if(place == 0)
+            parent.insertBefore( div, parent.firstChild);
+          else
+            parent.appendChild(div);
+        };
+
+        const appendImage = (image, profileImage, place) => {
+          const parent = document.querySelector('.message-container');
+          const div = document.createElement('div');
+          const prof_photo = document.createElement('img');
+          let img = document.createElement('img');
+          div.classList.add('image-container') 
+          prof_photo.classList.add('profile_photo');
+          prof_photo.src = "data:image/png;base64," + profileImage;
+          img.classList.add('single-image');
+          img.src= "data:image/png;base64," + image;
+          div.appendChild(prof_photo);
+          div.appendChild(img);
+          if(place == 0)
+            parent.insertBefore(div, parent.firstChild);
+          else  
+            parent.appendChild(div);
+        };
+
+        const usrCont = document.querySelector('.users-container');
+        if(usrCont.children.length != 0){
+          usrCont.children[0].click();
+        }

@@ -79,6 +79,11 @@ const getAllActiveUsers = async({ email }) => {
     return users;
 }
 
+const getAllOfflineUsers = async({ email }) => {
+    const users = userModel.find({active: false, email: { $ne: email}});
+    return users;
+}
+
 const setUserStatus = async ({ email }, status) => {
     const savedUser = await userModel.findOne({ email });
     savedUser.active = status;
@@ -91,4 +96,4 @@ const getUserUsingId = async(_id) => {
 }
 
 
-module.exports = { validateUser, registerUser, validateLogin, loginUser, getAllActiveUsers, setUserStatus, getUserUsingId };
+module.exports = { validateUser, registerUser, validateLogin, loginUser, getAllActiveUsers, setUserStatus, getUserUsingId, getAllOfflineUsers };

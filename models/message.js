@@ -13,13 +13,17 @@ const messageSchema = new mongoose.Schema({
     date: {
         type: mongoose.Schema.Types.Date,
         default: Date.now()
-    }
+    },
+    image: String
 });
 
 const messageModel = mongoose.model('message', messageSchema);
 
 const loadMessages = async (roomId, n) => {
     const messages = await messageModel.find({chatId: roomId}).populate('author', 'img _id').sort({ $natural: -1 }).skip(n).limit(15);
+    for(let message of messages)
+        if(message.image != null)
+            message = await messageModel.populate(message, 'author');
     return messages;
 }
 
@@ -44,5 +48,14 @@ const saveMessage = async (data, userIds, room) => {
     return null;  
 }
 
+const savePicture = async (userIds, image, room) => {
+    const newMessage = new messageModel({chatId: room._id, image, author: userIds[0]});
+    const saved = await newMessage.save();
+    let populatedImageMessage = await messageModel.populate(newMessage, 'author');
+    if(populatedImageMessage)
+        return populatedImageMessage;
+    return null;
+};
 
-module.exports = { saveMessages, saveMessage, loadMessages};
+
+module.exports = { saveMessages, saveMessage, loadMessages, savePicture };
